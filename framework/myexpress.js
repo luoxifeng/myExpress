@@ -4,6 +4,7 @@
 
 const http = require("http");
 const _ = require("../util/util");
+const Router = require("./router");
 //middleware 中间件列表
 let _middlewares = [];
 
@@ -16,7 +17,7 @@ function nextWapper(req, res) {
     next();
 }
 
-module.exports = function () {
+function express() {
     let app = {};
 
     //register middleware 注册中间件
@@ -26,7 +27,7 @@ module.exports = function () {
             _middlewares.push(path);
         } else if (_.isString(path) && _.isFunction(callback)){
             _middlewares.push(function(req, res, next){
-                if(req.path === path){
+                if(_.comparePath(req.path, path)){
                     callback(req, res, next);
                 } else {
                    next(); 
@@ -55,8 +56,7 @@ module.exports = function () {
         return function(path, callback) {
             if (_.isString(path) && _.isFunction(callback)) {
                 _middlewares.push(function (req, res, next) {
-                    if (req.method.toLowerCase() === method && 
-                        req.path.replace(/\//g, "") === path.replace(/\//g, "")) {
+                    if (req.method.toLowerCase() === method && _.comparePath(req.path, path)) {
                         callback(req, res, next)
                     } else {
                         next();
@@ -77,4 +77,8 @@ module.exports = function () {
     return app;
 }
 
+//路由
+express.Router = Router
+
+module.exports = express;
 

@@ -20,6 +20,7 @@ app.use(function(req, res, next){
     next();
 })
 
+//应用层级的路由
 app.use("/", function(req, res, next){
     console.log("首页");
     res.json({
@@ -49,6 +50,62 @@ app.get("/list", function(req, res, next){
         summary: summary
     })
 })
+
+
+/**
+ * 路由层级的路由
+ */
+let router1 = express.Router();
+router1.use("/router/index", function(req, res, next){
+    console.log("/roter/index")
+    res.json({
+        k:1111
+    })
+})
+app.use(router1);
+
+
+//串行特定路由路由
+let router2 = express.Router();
+router2.route("/router")
+.get("/get", function(req, res, next){
+    res.json({
+        desc: "这是路由层的get的请求"
+    })
+})
+.post("/post", function(req, res, next){
+    res.json({
+        desc: "这是路由层的post的请求"
+    })
+})
+app.use(router2);
+
+//映射所有类型
+let router3 = express.Router();
+router3.all("/router/all", function(req, res, next){
+    res.json({
+        desc: "这是映射所有类型"
+    })
+})
+app.use(router3);
+
+//不带有嵌套的路由
+let router4 = express.Router();
+router4.get("/get", function(req, res, next){
+    res.json({
+        desc: "这是不带有嵌套的路由get的请求"
+    })
+})
+.post("/post", function(req, res, next){
+    res.json({
+        desc: "这是不带有嵌套的路由post的请求"
+    })
+})
+app.use(router4);
+
+
+
+
 
 
 //404
